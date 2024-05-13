@@ -28,7 +28,7 @@ python generate_act_scale_shift.py --model /PATH/TO/LLaMA/llama-7b
 2. Weight-only quantization
 ```
 CUDA_VISIBLE_DEVICES=0 python main.py --model /PATH/TO/LLAMA/llama-7b --epochs 20 --output_dir ./log/llama-7b --eval_ppl --wbits 4 --abits 16 --quant_type mix --lwc \
---ckpt_path /CHECKPOINT/TO/FIRST/PTQ \
+--save_dir /CHECKPOINT/TO/FIRST/PTQ \
 --calib_dataset wikitext2  \
 --tasks piqa,arc_easy,arc_challenge,boolq,hellaswag,winogrande
 ```
@@ -37,7 +37,7 @@ CUDA_VISIBLE_DEVICES=0 python main.py --model /PATH/TO/LLAMA/llama-7b --epochs 2
 ```
 cd qat
 CUDA_VISIBLE_DEVICES=0 python finetune_lora.py --model_id /PATH/TO/LLAMA/llama-7b \
---ckpt /CHECKPOINT/TO/FIRST/PTQ --lora_r 64 -s 20000
+--save_dir /CHECKPOINT/TO/FIRST/PTQ --lora_r 64 -s 20000
 ```
 5. Merge with LoRA
 ```
@@ -49,7 +49,7 @@ CUDA_VISIBLE_DEVICES=0 python test_perplexity.py  --model_path /PATH/TO/LLAMA/ll
 6. Second PTQ
 ```
 CUDA_VISIBLE_DEVICES=0 python main.py --model /PATH/TO/MERGED/MODEL --epochs 20 --output_dir ./log/llama-7b --eval_ppl --wbits 4 --abits 16 --quant_type mix --lwc \
---ckpt_path /CHECKPOINT/TO/SECOND/PTQ \
+--save_dir /CHECKPOINT/TO/SECOND/PTQ \
 --calib_dataset wikitext2  \
 --tasks piqa,arc_easy,arc_challenge,boolq,hellaswag,winogrande
 ```
@@ -57,19 +57,14 @@ CUDA_VISIBLE_DEVICES=0 python main.py --model /PATH/TO/MERGED/MODEL --epochs 20 
 More detailed and optional arguments:
 - `--model`: the local model path or huggingface format.
 - `--wbits`: weight quantization bits.
-- `--abits`: activation quantization bits.
+- `--quant_type`: quantization type.
 - `--group_size`: group size of weight quantization. If no set, use per-channel quantization for weight as default.
 - `--lwc`: activate the Learnable Weight Clipping (LWC).
-- `--let`: activate the Learnable Equivalent Transformation (LET).
-- `--lwc_lr`: learning rate of LWC parameters, 1e-2 as default.
-- `--let_lr`: learning rate of LET parameters, 5e-3 as default.
 - `--epochs`: training epochs. You can set it as 0 to evaluate pre-trained OmniQuant checkpoints.
 - `--nsamples`: number of calibration samples, 128 as default.
 - `--eval_ppl`: evaluating the perplexity of quantized models.
 - `--tasks`: evaluating zero-shot tasks.
-- `--resume`: loading pre-trained OmniQuant parameters.
 - `--multigpu`: to inference larger network on multiple GPUs
-- `--real_quant`: real quantization, which can see memory reduce
 - `--save_dir`: saving the quantization model for further exploration.
 
 ## Results
